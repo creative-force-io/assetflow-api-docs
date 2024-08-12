@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Prostudio Workflow API
+  description: |-
+    This is a API specification for the Prostudio Workflow API. This API is used to interact with the Prostudio Workflow system.
+    The API is used to create, read, update and delete data in the Prostudio Workflow system.
+
+  termsOfService: http://prostudioforworkflow.profoto.com
+  contact:
+    email: support@profoto.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+externalDocs:
+  description: Find out more about Prostudio Workflow
+  url: http://prostudioforworkflow.profoto.com
+servers:
+  - url: https://your-domain.prostudio.cloud/api/v1
+    description: Production server
+tags:
+  - name: User
+    description: Operations about user
+  - name: Settings
+    description: Operations about settings
+paths:
+  /settings/attributes/view:
+    get:
+      tags:
+        - Settings
+      summary: Returns a list of view attributes.
+      description: Returns a list of view attributes.
+      operationId: getViewAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewAttributes'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Returns a list of users.
+      description: Returns a list of users.
+      operationId: getUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserArray'
+  /users/{global_id}:
+    get:
+      tags:
+        - Users
+      summary: Returns a user by global_id.
+      description: Returns a user by global_id.
+      operationId: getUserByGlobalId
+      parameters:
+        - name: global_id
+          in: path
+          description: The global_id of the user to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Returns the user that is currently logged in.
+      description: Returns the user that is currently logged in.
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: User not found
+    ViewAttributes:
+      required:
+        - attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+              name:
+                type: string
+                example: number
+              type:
+                type: string
+                example: text
+              required:
+                type: boolean
+                example: true
+              sortorder:
+                type: integer
+                example: 10
+              validation:
+                type: string
+                description: Validation rules for the attribute based on Laravel validation rules.
+    User:
+      required:
+        - global_id
+        - email
+        - firstname
+        - lastname
+      type: object
+      properties:
+        global_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          example: example@example.com
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Doe
+    UserArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+  securitySchemes:
+    bearerAuth:
+      type: https
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
