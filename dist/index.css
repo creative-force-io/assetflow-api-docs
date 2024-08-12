@@ -14,3 +14,11 @@ body {
     margin: 0;
     background: #fafafa;
 }
+
+.swagger-ui svg:not(:root), .topbar-wrapper span {
+    display: none;
+}
+
+.topbar-wrapper .link:before {
+    content: url('https://prostudioforworkflow.profoto.com/wp-content/uploads/2020/11/logo-assetflowprofoto.png');
+}
