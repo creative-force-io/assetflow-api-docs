@@ -21,4 +21,5 @@ body {
 
 .topbar-wrapper .link:before {
     content: url('https://prostudioforworkflow.profoto.com/wp-content/uploads/2020/11/logo-assetflowprofoto.png');
+    width: 100px;
 }
