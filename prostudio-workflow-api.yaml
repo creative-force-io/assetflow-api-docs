@@ -385,9 +385,29 @@ components:
                 type: string
                 example: Order One - 1234551
             data:
-                type: object
+                type: array
                 example: {"key": "value"}
             projects:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Project'
+    Project:
+        required:
+            - id
+            - name
+            - description
+        type: object
+        properties:
+            id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+            name:
+                type: string
+                example: Project One - 1234551
+            data:
+                type: array
+                example: {"key": "value"}
     Error: # todo|fix this schema based on exception handling
       required:
         - code
@@ -403,7 +423,7 @@ components:
           example: User not found
   securitySchemes:
     bearerAuth:
-      type: https
+      type: http
       scheme: bearer
       bearerFormat: JWT
 security:
