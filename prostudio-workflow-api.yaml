@@ -14,7 +14,11 @@ externalDocs:
   url: http://prostudioforworkflow.profoto.com
 
 servers:
-  - url: https://your-domain.prostudio.cloud/api/v1
+  - url: https://{subdomain}.prostudio.cloud/api/v1
+    variables:
+      subdomain:
+        default: your-subdomain
+        description: Customer unique subdomain assigned by the service provider
     description: Production server
 tags:
   - name: Settings
