@@ -22,6 +22,48 @@ tags:
   - name: Users
     description: Operations about user
 paths:
+  /sites:
+    get:
+      tags:
+        - Sites
+      summary: Returns a list of sites.
+      description: Returns a list of sites.
+      operationId: getSites
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteArray'
+  /sites/{id}:
+    get:
+      tags:
+        - Sites
+      summary: Returns a site by id.
+      description: Returns a site by id.
+      operationId: getSiteById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the site to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '404':
+          description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /settings/attributes/asset:
     get:
       tags:
@@ -222,6 +264,27 @@ components:
               validation:
                 type: string
                 description: Validation rules for the attribute based on Laravel validation rules.
+    Site:
+      required:
+        - id
+        - type
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        type:
+            type: string
+            example: Warehouse
+        name:
+          type: string
+          example: Warehouse One
+    SiteArray:
+        type: array
+        items:
+            $ref: '#/components/schemas/Site'
     User:
       required:
         - global_id
