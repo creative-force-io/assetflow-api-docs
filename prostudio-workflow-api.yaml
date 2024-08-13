@@ -26,6 +26,20 @@ tags:
   - name: Users
     description: Operations about user
 paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Returns a list of products.
+      description: Returns a list of products.
+      operationId: getProducts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductArray'
   /sites:
     get:
       tags:
@@ -314,6 +328,66 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/User'
+    Product:
+      required:
+          - id
+          - name
+          - description
+      type: object
+      properties:
+          id:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+          shortname:
+            type: string
+            example: Product One - 1234551
+          data:
+            type: object
+            example: {"key": "value"}
+          checkedin:
+            type: boolean
+            example: true
+          created_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          updated_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          deleted_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          deleted_by:
+            $ref: '#/components/schemas/User'
+          orders:
+            type: array
+            items:
+              $ref: '#/components/schemas/Order'
+    ProductArray:
+        type: array
+        items:
+            $ref: '#/components/schemas/Product'
+    Order:
+        required:
+            - id
+            - name
+            - description
+        type: object
+        properties:
+            id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+            shortname:
+                type: string
+                example: Order One - 1234551
+            data:
+                type: object
+                example: {"key": "value"}
+            projects:
     Error: # todo|fix this schema based on exception handling
       required:
         - code
