@@ -8,26 +8,86 @@ info:
   termsOfService: http://prostudioforworkflow.profoto.com
   contact:
     email: support@profoto.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.1
+  version: 1.0.0
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: http://prostudioforworkflow.profoto.com
+
 servers:
   - url: https://your-domain.prostudio.cloud/api/v1
     description: Production server
 tags:
-  - name: User
-    description: Operations about user
   - name: Settings
     description: Operations about settings
+  - name: Users
+    description: Operations about user
 paths:
+  /settings/attributes/asset:
+    get:
+      tags:
+        - Settings
+        - Assets
+      summary: Returns a list of asset attributes.
+      description: Returns a list of asset attributes.
+      operationId: getAssetAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+  /settings/attributes/order:
+    get:
+      tags:
+        - Settings
+        - Orders
+      summary: Returns a list of order attributes.
+      description: Returns a list of order attributes.
+      operationId: getOrderAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+  /settings/attributes/project:
+    get:
+      tags:
+        - Settings
+        - Projects
+      summary: Returns a list of project attributes.
+      description: Returns a list of project attributes.
+      operationId: getProjectAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+
+  /settings/attributes/product:
+    get:
+      tags:
+        - Settings
+        - Products
+      summary: Returns a list of product attributes.
+      description: Returns a list of product attributes.
+      operationId: getProductAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
   /settings/attributes/view:
     get:
       tags:
         - Settings
+        - Views
       summary: Returns a list of view attributes.
       description: Returns a list of view attributes.
       operationId: getViewAttributes
@@ -37,7 +97,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ViewAttributes'
+                $ref: '#/components/schemas/DynamicAttributes'
+
   /users:
     get:
       tags:
@@ -103,20 +164,36 @@ paths:
 
 components:
   schemas:
-    Error:
+    ProductAttributes:
       required:
-        - code
-        - message
+          - attributes
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-          example: 404
-        message:
-          type: string
-          example: User not found
-    ViewAttributes:
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                  type: string
+                  format: uuid
+                  example: 123e4567-e89b-12d3-a456-426614174000
+              name:
+                  type: string
+                  example: number
+              type:
+                  type: string
+                  example: text
+              required:
+                  type: boolean
+                  example: true
+              sortorder:
+                  type: integer
+                  example: 10
+              validation:
+                  type: string
+                  description: Validation rules for the attribute based on Laravel validation rules.
+    DynamicAttributes:
       required:
         - attributes
       type: object
@@ -170,6 +247,19 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/User'
+    Error: # todo|fix this schema based on exception handling
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: User not found
   securitySchemes:
     bearerAuth:
       type: https
