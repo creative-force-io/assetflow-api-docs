@@ -40,6 +40,106 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductArray'
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Returns a product by id.
+      description: Returns a product by id.
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{id}/checkin/{site}:
+    post:
+      tags:
+        - Products
+      summary: Checkin a product to a site.
+      description: Checkin a product to a site.
+      operationId: checkinProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to checkin.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: site
+          in: path
+          description: The id of the site to checkin the product to.
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+                schema:
+                    type: string
+                    example: Success
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{id}/checkout/{site}:
+    post:
+      tags:
+        - Products
+      summary: Checkout a product from a site.
+      description: Checkout a product from a site.
+      operationId: checkoutProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to checkout.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: site
+          in: path
+          description: The id of the site to checkout the product from.
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+                schema:
+                    type: string
+                    example: Success
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /sites:
     get:
       tags:
@@ -387,10 +487,6 @@ components:
             data:
                 type: array
                 example: {"key": "value"}
-            projects:
-                type: array
-                items:
-                    $ref: '#/components/schemas/Project'
     Project:
         required:
             - id
@@ -405,9 +501,6 @@ components:
             name:
                 type: string
                 example: Project One - 1234551
-            data:
-                type: array
-                example: {"key": "value"}
     Error: # todo|fix this schema based on exception handling
       required:
         - code

@@ -1,0 +1,523 @@
+openapi: 3.0.3
+info:
+  title: Prostudio Workflow API
+  description: |-
+    This is a API specification for the Prostudio Workflow API. This API is used to interact with the Prostudio Workflow system.
+    The API is used to create, read, update and delete data in the Prostudio Workflow system.
+
+  termsOfService: http://prostudioforworkflow.profoto.com
+  contact:
+    email: support@profoto.com
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Prostudio Workflow
+  url: http://prostudioforworkflow.profoto.com
+
+servers:
+  - url: https://{subdomain}.prostudio.cloud/api/v1
+    variables:
+      subdomain:
+        default: your-subdomain
+        description: Customer unique subdomain assigned by the service provider
+    description: Production server
+tags:
+  - name: Settings
+    description: Operations about settings
+  - name: Users
+    description: Operations about user
+paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Returns a list of products.
+      description: Returns a list of products.
+      operationId: getProducts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductArray'
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Returns a product by id.
+      description: Returns a product by id.
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{id}/checkin/{site}:
+    post:
+      tags:
+        - Products
+      summary: Checkin a product to a site.
+      description: Checkin a product to a site.
+      operationId: checkinProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to checkin.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: site
+          in: path
+          description: The id of the site to checkin the product to.
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+                schema:
+                    type: string
+                    example: Success
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{id}/checkout/{site}:
+    post:
+      tags:
+        - Products
+      summary: Checkout a product from a site.
+      description: Checkout a product from a site.
+      operationId: checkoutProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to checkout.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: site
+          in: path
+          description: The id of the site to checkout the product from.
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+                schema:
+                    type: string
+                    example: Success
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sites:
+    get:
+      tags:
+        - Sites
+      summary: Returns a list of sites.
+      description: Returns a list of sites.
+      operationId: getSites
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteArray'
+  /sites/{id}:
+    get:
+      tags:
+        - Sites
+      summary: Returns a site by id.
+      description: Returns a site by id.
+      operationId: getSiteById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the site to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '404':
+          description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /settings/attributes/asset:
+    get:
+      tags:
+        - Settings
+        - Assets
+      summary: Returns a list of asset attributes.
+      description: Returns a list of asset attributes.
+      operationId: getAssetAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+  /settings/attributes/order:
+    get:
+      tags:
+        - Settings
+        - Orders
+      summary: Returns a list of order attributes.
+      description: Returns a list of order attributes.
+      operationId: getOrderAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+  /settings/attributes/project:
+    get:
+      tags:
+        - Settings
+        - Projects
+      summary: Returns a list of project attributes.
+      description: Returns a list of project attributes.
+      operationId: getProjectAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+
+  /settings/attributes/product:
+    get:
+      tags:
+        - Settings
+        - Products
+      summary: Returns a list of product attributes.
+      description: Returns a list of product attributes.
+      operationId: getProductAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+  /settings/attributes/view:
+    get:
+      tags:
+        - Settings
+        - Views
+      summary: Returns a list of view attributes.
+      description: Returns a list of view attributes.
+      operationId: getViewAttributes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DynamicAttributes'
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Returns a list of users.
+      description: Returns a list of users.
+      operationId: getUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserArray'
+  /users/{global_id}:
+    get:
+      tags:
+        - Users
+      summary: Returns a user by global_id.
+      description: Returns a user by global_id.
+      operationId: getUserByGlobalId
+      parameters:
+        - name: global_id
+          in: path
+          description: The global_id of the user to return.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Returns the user that is currently logged in.
+      description: Returns the user that is currently logged in.
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ProductAttributes:
+      required:
+          - attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                  type: string
+                  format: uuid
+                  example: 123e4567-e89b-12d3-a456-426614174000
+              name:
+                  type: string
+                  example: number
+              type:
+                  type: string
+                  example: text
+              required:
+                  type: boolean
+                  example: true
+              sortorder:
+                  type: integer
+                  example: 10
+              validation:
+                  type: string
+                  description: Validation rules for the attribute based on Laravel validation rules.
+    DynamicAttributes:
+      required:
+        - attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+              name:
+                type: string
+                example: number
+              type:
+                type: string
+                example: text
+              required:
+                type: boolean
+                example: true
+              sortorder:
+                type: integer
+                example: 10
+              validation:
+                type: string
+                description: Validation rules for the attribute based on Laravel validation rules.
+    Site:
+      required:
+        - id
+        - type
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        type:
+            type: string
+            example: Warehouse
+        name:
+          type: string
+          example: Warehouse One
+    SiteArray:
+        type: array
+        items:
+            $ref: '#/components/schemas/Site'
+    User:
+      required:
+        - global_id
+        - email
+        - firstname
+        - lastname
+      type: object
+      properties:
+        global_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          example: example@example.com
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Doe
+    UserArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Product:
+      required:
+          - id
+          - name
+          - description
+      type: object
+      properties:
+          id:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+          shortname:
+            type: string
+            example: Product One - 1234551
+          data:
+            type: object
+            example: {"key": "value"}
+          checkedin:
+            type: boolean
+            example: true
+          created_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          updated_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          deleted_at:
+            type: string
+            format: date-time
+            example: 2021-01-01T00:00:00Z
+          deleted_by:
+            $ref: '#/components/schemas/User'
+          orders:
+            type: array
+            items:
+              $ref: '#/components/schemas/Order'
+    ProductArray:
+        type: array
+        items:
+            $ref: '#/components/schemas/Product'
+    Order:
+        required:
+            - id
+            - name
+            - description
+        type: object
+        properties:
+            id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+            shortname:
+                type: string
+                example: Order One - 1234551
+            data:
+                type: array
+                example: {"key": "value"}
+    Project:
+        required:
+            - id
+            - name
+            - description
+        type: object
+        properties:
+            id:
+                type: string
+                format: uuid
+                example: 123e4567-e89b-12d3-a456-426614174000
+            name:
+                type: string
+                example: Project One - 1234551
+    Error: # todo|fix this schema based on exception handling
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: User not found
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
