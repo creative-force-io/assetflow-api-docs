@@ -1,3 +1,4 @@
+---
 openapi: "3.0.3"
 info:
   title: "Prostudio Workflow API"
@@ -18,6 +19,14 @@ servers:
         description: "Customer unique subdomain assigned by the service provider"
     description: "Production server"
 tags:
+  - name: "Authentication"
+    description: "Operations about authentication"
+  - name: "Assets"
+    description: "Operations about assets"
+  - name: "Products"
+    description: "Operations about products"
+  - name: "Sites"
+    description: "Operations about sites"
   - name: "Settings"
     description: "Operations about settings"
   - name: "Users"
@@ -179,7 +188,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductArray"
+                properties:
+                  data:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  links:
+                    $ref: "#/components/schemas/Links"
+                  meta:
+                    $ref: "#/components/schemas/Meta"
   /products/{id}:
     get:
       tags:
@@ -194,7 +211,7 @@ paths:
           required: "true"
           schema:
             type: "string"
-            format: "uuid"
+            format: "int32"
       responses:
         200:
           description: "Successful operation"
@@ -515,7 +532,7 @@ components:
         models:
           type: "array"
           items:
-            type: "string"
+            type: "object"
           example:
         order:
           type: "integer"
@@ -639,9 +656,6 @@ components:
     Product:
       required:
         - "id"
-        - "name"
-        - "description"
-      type: "object"
       properties:
         id:
           type: "string"
@@ -695,8 +709,12 @@ components:
           example: "Order One - 1234551"
         data:
           type: "array"
-          example:
-            key: "value"
+          items:
+            type: "object"
+            properties:
+              key:
+                type: "string"
+                example: "value"
     Project:
       required:
         - "id"
