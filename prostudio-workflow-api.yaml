@@ -102,6 +102,14 @@ paths:
       summary: Returns an asset by id.
       description: Returns an asset by id.
       operationId: getAssetById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the asset to return.
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: Successful operation
