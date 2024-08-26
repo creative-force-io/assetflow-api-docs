@@ -7,6 +7,223 @@ info:
 
     The API is used to create, read, update and delete data in the Prostudio
     Workflow system.
+
+
+    ### Authentication
+
+
+    Our API uses Bearer Token authentication, managed by Laravel Sanctum. This
+    method ensures secure access to API endpoints by requiring a valid token to
+    be sent with each request.
+
+
+    **How to Authenticate**
+
+
+    To access protected endpoints, you must include a Bearer Token in the
+    `Authorization` header of your HTTP requests:
+
+
+    ```
+
+    Authorization: Bearer <your-token-here>
+
+    ```
+
+
+    **Obtaining a Token**
+
+
+    You can obtain a token by authenticating through the `/login` endpoint.
+    After a successful login, you will receive a token that can be used to
+    access API resources.
+
+
+    **Token Expiration**
+
+
+    Tokens issued by the application do not expire by default. However, for
+    security reasons, it’s best to manage token lifecycle and ensure tokens are
+    refreshed or revoked appropriately.
+
+
+    **Best Practices**
+
+
+    - Secure Storage: Always store your tokens securely on the client side
+    (e.g., in environment variables or secure storage mechanisms).
+
+    - Revoking Tokens: If a token is compromised, ensure it is revoked
+    immediately through the appropriate endpoint.
+
+    - Use HTTPS: Always use HTTPS to protect the token during transmission.
+
+
+    **Error Handling**
+
+
+    If the token is missing, invalid, or expired, the API will return an HTTP
+    401 (Unauthorized) response. Ensure your application handles this response
+    by prompting the user to re-authenticate or obtain a new token.
+
+
+    ### Filtering, Sorting, and Including Relations
+
+
+    Our API supports advanced querying features such as filtering, sorting, and
+    including related resources, powered by the Spatie Query Builder package.
+    These features allow you to customize the data returned by the API to meet
+    your specific needs.
+
+
+    **Filtering**: You can filter the results of an API query by specific fields
+    using the `filter` parameter. For example,
+
+
+    `GET /users?filter[status]=active`
+
+
+    filters users by status. Each endpoint may support different filters, which
+    are documented under the specific endpoint.
+
+
+    **Sorting**: Sorting allows you to order results by one or more fields using
+    the `sort` parameter. For example,
+
+
+    `GET /users?sort=-created_at`
+
+
+    sorts users by creation date in descending order. The sortable fields are
+    specific to each endpoint and are documented accordingly.
+
+
+    **Including Relations**: You can include related resources using the
+    `include` parameter. For example,
+
+
+    `GET /users?include=posts`
+
+
+    includes the user's posts. The relations that can be included are specific
+    to each endpoint and are documented under that endpoint.
+
+
+    You can combine filtering, sorting, and including relations in a single
+    request to fully customize the data you receive. For example,
+
+
+    `GET /users?filter[status]=active&sort=-created_at&include=posts`.
+
+
+    If you use unsupported filters, sorts, or includes, the API will return an
+    appropriate error message. Ensure that you are using the correct parameters
+    as per the documentation provided under each endpoint.
+
+
+    **Best Practices**: Check available filters, sorts, and relations by
+    referring to the specific endpoint's documentation. Limit included relations
+    to optimize performance, and paginate results to handle large datasets
+    effectively.
+
+
+    ### Pagination
+
+
+    Our API implements pagination to handle large sets of data efficiently.
+    Pagination is controlled via the `page` parameter, and additional metadata
+    is returned to help you navigate through paginated results.
+
+
+    **Pagination Parameters**: When retrieving a list of resources, you can use
+    the `page` query parameter to specify which page of results you would like
+    to retrieve. By default, results are paginated with a set number of items
+    per page.
+
+
+    **Pagination Response Structure**: The paginated response includes two key
+    objects: `Links` and `Meta`, which provide information about the pagination
+    state and navigation links.
+
+
+    - **Links**: Contains URIs for navigating between pages.
+      - **first**: URL to the first page of results.
+      - **last**: URL to the last page of results.
+      - **prev**: URL to the previous page of results, or `null` if you're on the first page.
+      - **next**: URL to the next page of results, or `null` if you're on the last page.
+
+    - **Meta**: Provides additional information about the pagination.
+      - **current_page**: The current page number.
+      - **from**: The starting record number on the current page.
+      - **last_page**: The last available page number.
+      - **links**: An array of objects representing pagination links.
+        - **url**: The URL for this particular page link.
+        - **label**: A textual label for this link (e.g., `&laquo; Previous`).
+        - **active**: Whether this page link is currently active.
+      - **path**: The base path for the API endpoint.
+      - **per_page**: The number of items per page.
+      - **to**: The ending record number on the current page.
+      - **total**: The total number of records across all pages.
+
+    **Example Usage**: To retrieve the next page of results, use the `next` link
+    provided in the `links` section of the response.
+
+
+    **Best Practices**: Use pagination to limit the amount of data returned in
+    each response, handle `null` values in `prev` and `next` fields, and
+    consider caching responses to improve performance.
+
+
+    ### Rate Limiting
+
+
+    To ensure the stability and fair usage of our API, we have implemented rate
+    limiting. This means that there is a maximum number of requests that can be
+    made to the API within a specified time period. If your application exceeds
+    these limits, further requests will be temporarily blocked until the rate
+    limit period resets.
+
+
+    **Rate Limit Details:**
+
+
+    - **Requests per Minute**: You are allowed to make up to `X` requests per
+    minute. This limit is applied globally across all endpoints.
+
+    - **Burst Capacity**: In certain cases, a small burst of requests may be
+    allowed. However, sustained request rates that exceed the defined limits
+    will trigger rate limiting.
+
+    - **Reset Period**: Rate limits are reset every minute. Once the reset
+    period is reached, you can resume making requests.
+
+    - **Response Headers**: When approaching the rate limit, the following
+    headers will be included in the response:
+     - `X-RateLimit-Limit`: The total number of requests allowed in the current time window.
+      - `X-RateLimit-Remaining`: The number of requests remaining in the current time window.
+      - `X-RateLimit-Reset`: The time (in UNIX epoch format) when the rate limit will be reset.
+
+    **Handling Rate Limits:**
+
+
+    If your application exceeds the allowed request rate, the API will return an
+    HTTP 429 (Too Many Requests) status code. When this occurs, you should
+    implement a backoff strategy by pausing further requests until the reset
+    time provided in the `X-RateLimit-Reset` header.
+
+
+    **Best Practices:**
+
+
+    - Optimize your requests by reducing unnecessary API calls.
+
+    - Distribute your requests evenly over time.
+
+    - Monitor the `X-RateLimit-Remaining` header to track your usage.
+
+
+    If you require higher rate limits, please contact our support team to
+    discuss your specific needs.
   termsOfService: 'http://prostudioforworkflow.profoto.com'
   contact:
     email: support@profoto.com
@@ -25,15 +242,6 @@ servers:
     description: Production server
 tags:
   - name: Authentication
-    description: >-
-      ProStudio API requires users to authenticate before accessing protected
-      endpoints.
-
-      Users must obtain a JWT token by providing their credentials via the
-      `/login` endpoint. 
-
-      This token must then be used in the `Authorization` header for subsequent
-      requests.
   - name: Assets
     description: Operations about assets
   - name: Products
@@ -97,7 +305,8 @@ paths:
       summary: Returns a list of assets.
       description: Returns a list of assets.
       operationId: getAssets
-      parameters: []
+      parameters:
+        - $ref: '#/components/parameters/FilterById'
       responses:
         '200':
           description: Successful operation
@@ -112,6 +321,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssetArray'
+        default:
+          $ref: '#/components/responses/Error'
   '/assets/{id}':
     get:
       tags:
@@ -143,6 +354,8 @@ paths:
                 $ref: '#/components/schemas/Asset'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        default:
+          $ref: '#/components/responses/Error'
   '/assets/{id}/status':
     patch:
       tags:
@@ -182,10 +395,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Asset'
-        '300':
-          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
   '/assets/{id}/attributes':
     patch:
       tags:
@@ -1055,6 +1268,15 @@ paths:
         '403':
           $ref: '#/components/responses/AuthorizationError'
 components:
+  parameters:
+    FilterById:
+      in: query
+      name: 'filter[id]'
+      description: Filter by id with exact match.
+      required: false
+      schema:
+        type: integer
+        example: '123'
   responses:
     Error:
       description: Internal server error
@@ -1496,7 +1718,7 @@ components:
         path:
           type: string
           format: uri
-          example: 'https://tenant1.localhost/api/v1/assets'
+          example: 'https://your-subdomain.prostudio.cloud/api/v1/assets'
         per_page:
           type: integer
           example: 15
