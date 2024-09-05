@@ -249,7 +249,7 @@ info:
     email: support@profoto.com
     name: Prostudio Workflow Support
     url: 'https://support.profoto.com/en/support/solutions/79000058200'
-  version: 1.0.0
+  version: 1.1.0
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: 'http://prostudioforworkflow.profoto.com'
