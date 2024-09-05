@@ -1472,6 +1472,14 @@ paths:
     patch:
       tags:
         - Webhooks
+      parameters:
+        - name: id
+          in: path
+          description: The id of the webhook to update.
+          required: true
+          schema:
+            type: integer
+            format: int32
       summary: Update a webhook.
       description: Update a webhook.
       operationId: updateWebhook
@@ -1502,6 +1510,14 @@ paths:
       tags:
         - Webhooks
       summary: Delete a webhook.
+      parameters:
+        - name: id
+          in: path
+          description: The id of the webhook to update.
+          required: true
+          schema:
+            type: integer
+            format: int32
       description: Delete a webhook.
       operationId: deleteWebhook
       responses:
