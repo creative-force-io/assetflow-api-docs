@@ -2,248 +2,169 @@ openapi: 3.1.0
 info:
   title: Prostudio Workflow API
   description: >-
-    This is a API specification for the Prostudio Workflow API. This API is used
-    to interact with the Prostudio Workflow system.
-
-    The API is used to create, read, update and delete data in the Prostudio
-    Workflow system.
-
-
-    ### Authentication
+    This is the API specification for the Prostudio Workflow API, used to
+    interact with the Prostudio Workflow system. The API enables CRUD (Create,
+    Read, Update, Delete) operations across various resources within the
+    workflow system, such as assets, products, orders, and users.
 
 
-    Our API uses Bearer Token authentication. This method ensures secure access
-    to API endpoints by requiring a valid token to be sent with each request.
+    ## Authentication
 
 
-    **How to Authenticate**
+    The API uses Bearer Token authentication to ensure secure access. A valid
+    access token must be included in the `Authorization` header for each request
+    to protected endpoints.
 
 
-    To access protected endpoints, you must include a Bearer Token in the
-    `Authorization` header of your HTTP requests:
+    ### How to Authenticate
+
+
+    To access protected endpoints, include the token in the `Authorization`
+    header like so:
 
 
     ```
 
-    Authorization: Bearer <your-token-here>
+    Authorization: Bearer <your-access-token>
 
     ```
 
 
-    **Obtaining a Token**
+    ### Obtaining Tokens
 
 
-    You can obtain a token by authenticating through the `/login` endpoint.
-    After a successful login, you will receive a token that can be used to
-    access API resources.
+    Tokens can be obtained by authenticating through the `/login` endpoint using
+    valid credentials (email and password). On successful authentication, the
+    API returns both an **access token** and a **refresh token**.
 
 
-    **Token Expiration**
+    ### Token Expiration
 
 
-    Tokens issued by the application do not expire by default. However, for
-    security reasons, it’s best to manage token lifecycle and ensure tokens are
-    refreshed or revoked appropriately.
+    - **Access Token**: Expires after a predefined time period.
 
+    - **Refresh Token**: Does not expire by default but can be revoked. It's
+    used to obtain new access tokens without re-authenticating.
 
-    **Best Practices**
 
+    To refresh the access token, use the `/refresh-token` endpoint with a valid
+    refresh token.
 
-    - Secure Storage: Always store your tokens securely on the client side
-    (e.g., in environment variables or secure storage mechanisms).
 
-    - Revoking Tokens: If a token is compromised, ensure it is revoked
-    immediately through the appropriate endpoint.
+    ### Token Best Practices
 
-    - Use HTTPS: Always use HTTPS to protect the token during transmission.
 
+    - Store tokens securely (e.g., environment variables or secure storage).
 
-    **Error Handling**
+    - Revoke compromised tokens immediately via the API's token revocation
+    endpoints.
 
+    - Always use HTTPS to transmit tokens securely.
 
-    If the token is missing, invalid, or expired, the API will return an HTTP
-    401 (Unauthorized) response. Ensure your application handles this response
-    by prompting the user to re-authenticate or obtain a new token.
 
+    ### Error Handling
 
-    ### Filtering, Sorting, and Including Relations
 
+    If the token is missing, invalid, or expired, the API returns a 401
+    (Unauthorized) error. Handle this by prompting the user to re-authenticate
+    or refresh the token.
 
-    Our API supports advanced querying features such as filtering, sorting, and
-    including related resources, powered by the Spatie Query Builder package.
-    These features allow you to customize the data returned by the API to meet
-    your specific needs.
 
+    ## Filtering, Sorting, and Including Relations
 
-    **Filtering**
 
+    The API supports advanced querying features for filtering, sorting, and
+    including related resources in responses. These options allow you to
+    customize the data returned based on your needs.
 
-    You can filter the results of an API query by specific fields using the
-    `filter` parameter. For example,
 
+    - **Filtering**: Filter responses by fields. For example, to filter users by
+    status, use `GET /users?filter[status]=active`.
 
-    `GET /users?filter[status]=active`
+    - **Sorting**: Sort results by specific fields. Example: `GET
+    /users?sort=-created_at` to sort by creation date in descending order.
 
+    - **Including Relations**: Include related resources with the `include`
+    parameter. For example, `GET /users?include=posts` includes related posts
+    for each user.
 
-    filters users by status. Each endpoint may support different filters, which
-    are documented under the specific endpoint.
 
+    Check each endpoint's documentation for available filters, sorts, and
+    relations.
 
-    **Sorting**
 
+    ## Pagination
 
-    Sorting allows you to order results by one or more fields using the `sort`
-    parameter. For example,
 
+    For large datasets, the API implements pagination to optimize performance.
+    Pagination is controlled by the `page` parameter.
 
-    `GET /users?sort=-created_at`
 
+    ### Pagination Response
 
-    sorts users by creation date in descending order. The sortable fields are
-    specific to each endpoint and are documented accordingly.
 
+    Paginated responses include `Links` and `Meta` objects that provide
+    navigation links and pagination metadata (current page, total items, etc.).
+    Use these to navigate through large data sets efficiently.
 
-    **Including Relations**
 
+    ## Rate Limiting
 
-    You can include related resources using the `include` parameter. For
-    example,
 
+    To ensure stability and fair usage, rate limiting is implemented across the
+    API. The API restricts the number of requests within a given time period. If
+    the rate limit is exceeded, further requests will be blocked until the time
+    window resets.
 
-    `GET /users?include=posts`
 
+    ### Rate Limit Details
 
-    includes the user's posts. The relations that can be included are specific
-    to each endpoint and are documented under that endpoint.
 
+    - **Requests per Minute**: The maximum number of requests allowed per minute
+    (global limit across all endpoints).
 
-    You can combine filtering, sorting, and including relations in a single
-    request to fully customize the data you receive. For example,
+    - **Burst Capacity**: Occasional bursts of requests may be allowed but
+    sustained high-frequency requests will trigger rate limiting.
 
+    - **Reset Period**: Rate limits reset every minute.
 
-    `GET /users?filter[status]=active&sort=-created_at&include=posts`.
 
+    When rate limiting is active, the API includes the following headers in
+    responses:
 
-    If you use unsupported filters, sorts, or includes, the API will return an
-    appropriate error message. Ensure that you are using the correct parameters
-    as per the documentation provided under each endpoint.
 
+    - `X-RateLimit-Limit`: Total number of allowed requests in the current
+    window.
 
-    **Best Practices**
+    - `X-RateLimit-Remaining`: Number of requests left in the current window.
 
+    - `X-RateLimit-Reset`: UNIX timestamp of when the rate limit window will
+    reset.
 
-    Check available filters, sorts, and relations by referring to the specific
-    endpoint's documentation. Limit included relations to optimize performance,
-    and paginate results to handle large datasets effectively.
 
+    ### Handling Rate Limits
 
-    ### Pagination
 
+    If a 429 (Too Many Requests) error occurs, the client should back off and
+    retry the request after the reset time indicated by the `X-RateLimit-Reset`
+    header.
 
-    Our API implements pagination to handle large sets of data efficiently.
-    Pagination is controlled via the `page` parameter, and additional metadata
-    is returned to help you navigate through paginated results.
 
+    ## Best Practices
 
-    **Pagination Parameters**
 
+    - Optimize API calls by reducing unnecessary requests.
 
-    When retrieving a list of resources, you can use the `page` query parameter
-    to specify which page of results you would like to retrieve. By default,
-    results are paginated with a set number of items per page.
+    - Use filtering and sorting to request only the data you need.
 
+    - Paginate large datasets for better performance.
 
-    **Pagination Response Structure**
+    - Monitor your usage with rate limit headers and distribute requests over
+    time to avoid rate limiting.
 
 
-    The paginated response includes two key objects: `Links` and `Meta`, which
-    provide information about the pagination state and navigation links.
-
-
-    - **Links**: Contains URIs for navigating between pages.
-      - **first**: URL to the first page of results.
-      - **last**: URL to the last page of results.
-      - **prev**: URL to the previous page of results, or `null` if you're on the first page.
-      - **next**: URL to the next page of results, or `null` if you're on the last page.
-
-    - **Meta**: Provides additional information about the pagination.
-      - **current_page**: The current page number.
-      - **from**: The starting record number on the current page.
-      - **last_page**: The last available page number.
-      - **links**: An array of objects representing pagination links.
-        - **url**: The URL for this particular page link.
-        - **label**: A textual label for this link (e.g., `&laquo; Previous`).
-        - **active**: Whether this page link is currently active.
-      - **path**: The base path for the API endpoint.
-      - **per_page**: The number of items per page.
-      - **to**: The ending record number on the current page.
-      - **total**: The total number of records across all pages.
-
-    **Example Usage**
-
-
-    To retrieve the next page of results, use the `next` link provided in the
-    `links` section of the response.
-
-
-    **Best Practices**
-
-
-    Use pagination to limit the amount of data returned in each response, handle
-    `null` values in `prev` and `next` fields, and consider caching responses to
-    improve performance.
-
-
-    ### Rate Limiting
-
-
-    To ensure the stability and fair usage of our API, we have implemented rate
-    limiting. This means that there is a maximum number of requests that can be
-    made to the API within a specified time period. If your application exceeds
-    these limits, further requests will be temporarily blocked until the rate
-    limit period resets.
-
-
-    **Rate Limit Details**
-
-
-    - **Requests per Minute**: You are allowed to make up to `X` requests per
-    minute. This limit is applied globally across all endpoints.
-
-    - **Burst Capacity**: In certain cases, a small burst of requests may be
-    allowed. However, sustained request rates that exceed the defined limits
-    will trigger rate limiting.
-
-    - **Reset Period**: Rate limits are reset every minute. Once the reset
-    period is reached, you can resume making requests.
-
-    - **Response Headers**: When approaching the rate limit, the following
-    headers will be included in the response:
-     - `X-RateLimit-Limit`: The total number of requests allowed in the current time window.
-      - `X-RateLimit-Remaining`: The number of requests remaining in the current time window.
-      - `X-RateLimit-Reset`: The time (in UNIX epoch format) when the rate limit will be reset.
-
-    **Handling Rate Limits**
-
-
-    If your application exceeds the allowed request rate, the API will return an
-    HTTP 429 (Too Many Requests) status code. When this occurs, you should
-    implement a backoff strategy by pausing further requests until the reset
-    time provided in the `X-RateLimit-Reset` header.
-
-
-    **Best Practices**
-
-
-    - Optimize your requests by reducing unnecessary API calls.
-
-    - Distribute your requests evenly over time.
-
-    - Monitor the `X-RateLimit-Remaining` header to track your usage.
-
-
-    If you require higher rate limits, please contact our support team to
-    discuss your specific needs.
+    If you require higher rate limits or additional API features, contact our
+    support team.
   termsOfService: 'http://prostudioforworkflow.profoto.com'
   contact:
     email: support@profoto.com
@@ -279,8 +200,10 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Login to the system.
-      description: Login to the system with email and password.
+      summary: Login to the system
+      description: >-
+        Login to the system using email and password, and obtain an access token
+        and a refresh token.
       operationId: login
       requestBody:
         content:
@@ -302,22 +225,81 @@ paths:
                 - password
       responses:
         '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
-            X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
-            X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+          description: Successful login and token issuance
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token for authentication
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refresh_token:
+                    type: string
+                    description: JWT refresh token used for obtaining new access tokens
+                    example: 137|3l4HRzougoZats4Tw7ro78M9cIqlXFz4k24XzHAX90902f28
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: Expiry date and time for the access token
+                    example: '2024-12-31T23:59:59.000Z'
         '401':
-          $ref: '#/components/responses/AuthenticationError'
-        '422':
-          $ref: '#/components/responses/ValidationError'
+          description: Invalid credentials
+          content:
+            application/json:
+              example:
+                status: 401
+                title: Unauthorized
+                detail: Email & Password do not match with our record.
+  /refresh-token:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh JWT Token
+      description: Endpoint to refresh the JWT token using a valid refresh token.
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  description: The refresh token used to obtain a new access token.
+                  example: 137|3l4HRzougoZats4Tw7ro78M9cIqlXFz4k24XzHAX90902f28
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Successful refresh of token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: The newly issued JWT token.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refresh_token:
+                    type: string
+                    description: Newly issued refresh token.
+                    example: 137|3l4HRzougoZats4Tw7ro78M9cIqlXFz4k24XzHAX90902f28
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: The expiry date of the new token.
+                    example: '2024-12-31T23:59:59.000Z'
+        '401':
+          description: Unauthorized or invalid refresh token
+          content:
+            application/json:
+              example:
+                status: 401
+                title: Unauthorized
+                detail: Invalid refresh token.
   /assets:
     get:
       tags:
