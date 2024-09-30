@@ -170,12 +170,12 @@ info:
     email: support@profoto.com
     name: Prostudio Workflow Support
     url: 'https://support.profoto.com/en/support/solutions/79000058200'
-  version: 1.1.1
+  version: 2.0.0
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: 'http://prostudioforworkflow.profoto.com'
 servers:
-  - url: 'https://{subdomain}.prostudio.cloud/api/v1'
+  - url: 'https://{subdomain}.prostudio.cloud/api/v2'
     variables:
       subdomain:
         default: your-subdomain
@@ -1752,9 +1752,6 @@ components:
       example: 60
   schemas:
     Asset:
-      required:
-        - id
-        - name
       type: object
       properties:
         id:
@@ -1777,6 +1774,12 @@ components:
           type: string
           nullable: false
           example: null
+        filesize:
+          type: integer
+          example: 12345
+        aspect_ratio:
+          type: string
+          example: '16:9'
         url:
           type: string
           format: uri
@@ -1789,7 +1792,7 @@ components:
           type: string
           format: uri
           example: 'https://your-subdomain.prostudio.cloud/thumbnail/urls/here.png'
-        data:
+        attributes:
           type: object
           example:
             78796b73-f520-463b-bf4a-aa0364b146db: >-
@@ -1802,6 +1805,12 @@ components:
               the value of the attribute with the key
               78796b73-f520-463b-bf4a-aa0364b146dd
           nullable: true
+        relationships:
+          type: array
+          items:
+            type: object
+        included:
+          type: object
     ProductAttributes:
       required:
         - attributes
