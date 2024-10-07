@@ -39,8 +39,19 @@ window.onload = function() {
         // Append Changelog to the Info section if it exists
         if (changelog) {
           const changelogDiv = document.createElement('div');
-          changelogDiv.innerHTML = `<h4>Changelog</h4><pre>${changelog}</pre>`;
+          changelogDiv.innerHTML = `
+            <h4>Changelog</h4>
+            <div>
+              ${changelog.split('\n').map(line => {
+                if (line.startsWith('###')) {
+                  return `<h5>${line.replace('### ', '')}</h5>`;
+                }
+                return `<p>${line}</p>`;
+              }).join('')}
+            </div>`;
           infoSection.appendChild(changelogDiv);
+        } else {
+          console.warn('No changelog found');
         }
       }, 1000);  // Adjust timeout value if necessary
     }
