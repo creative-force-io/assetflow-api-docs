@@ -97,7 +97,7 @@ info:
 
 
     For large datasets, the API implements pagination to optimize performance.
-    Pagination is controlled by the `page` parameter.
+    Pagination is controlled by the `per_page` parameter.
 
 
     ### Pagination Response
@@ -170,10 +170,11 @@ info:
     email: support@profoto.com
     name: Prostudio Workflow Support
     url: 'https://support.profoto.com/en/support/solutions/79000058200'
-  version: 2.0.0
+  version: 2.0.1
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: 'http://prostudioforworkflow.profoto.com'
+x-changelog: To be done
 servers:
   - url: 'https://{subdomain}.prostudio.cloud/api/v2'
     variables:
@@ -438,7 +439,7 @@ paths:
                 data:
                   type: object
                   example:
-                    key: value
+                    123e4567-e89b-12d3-a456-426614174000: my new value
       responses:
         '200':
           description: Successful operation
@@ -501,7 +502,11 @@ paths:
       tags:
         - Products
       summary: Create a new product/products.
-      description: Create a new product or multiple products.
+      description: >-
+        Create a new product or multiple products. You can create a single
+        product or multiple products in a single request. If you're creating
+        multiple products, send an array of product objects. Maximum 5000
+        products can be created in a single request.
       operationId: createProduct
       requestBody:
         content:
@@ -569,6 +574,44 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           $ref: '#/components/responses/NotFoundError'
+    patch:
+      tags:
+        - Products
+      summary: Update a product by id.
+      description: Update a product by id.
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product to update
+          required: true
+          schema:
+            type: integer
+            format: int32
+          example: 50
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
   '/products/{id}/checkin/{site}':
     post:
       tags:
@@ -681,6 +724,63 @@ paths:
                     $ref: '#/components/schemas/Links'
                   meta:
                     $ref: '#/components/schemas/Meta'
+    post:
+      tags:
+        - Orders
+      summary: Create an order.
+      description: Create an order.
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderCreate'
+            example:
+              data:
+                description: My new order
+                attributes:
+                  key: value
+                relationships:
+                  project:
+                    data:
+                      - type: project
+                        id: 1
+                  studio:
+                    data:
+                      type: studio
+                      id: 1
+      responses:
+        '201':
+          description: Successful operation
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Webhook'
+              example:
+                data:
+                  - type: webhook
+                    id: 1
+                    url: 'https://example.com/webhook'
+                    events:
+                      - order.created
+                      - order.updated
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        default:
+          $ref: '#/components/responses/Error'
   '/orders/{id}':
     get:
       tags:
@@ -1447,6 +1547,14 @@ paths:
                   $ref: '#/components/schemas/Links'
                 meta:
                   $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  - type: webhook
+                    id: 1
+                    name: My webhook
+                    url: 'https://example.com/webhook'
+                    events:
+                      - order.statusupdated
     post:
       tags:
         - Webhooks
@@ -1461,6 +1569,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Webhook'
+            example:
+              data:
+                name: My webhhok
+                url: 'https://example.com/webhook'
+                events:
+                  - order.statusupdated
       responses:
         '201':
           description: Successful operation
@@ -1474,11 +1588,18 @@ paths:
           content:
             application/json:
               schema:
-                schema:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Webhook'
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Webhook'
+              example:
+                data:
+                  - type: webhook
+                    id: 1
+                    url: 'https://example.com/webhook'
+                    events:
+                      - order.created
+                      - order.updated
         '422':
           $ref: '#/components/responses/ValidationError'
         default:
@@ -1517,9 +1638,18 @@ paths:
             application/json:
               schema:
                 data:
-                  type: array
+                  type: object
                   items:
                     $ref: '#/components/schemas/Webhook'
+              example:
+                data:
+                  - type: webhook
+                    id: 1
+                    name: my new webhook
+                    url: 'https://example.com/webhook'
+                    events:
+                      - order.created
+                      - order.updated
         '422':
           $ref: '#/components/responses/ValidationError'
         default:
@@ -1580,6 +1710,15 @@ paths:
                           example: order.created
 components:
   parameters:
+    AcceptHeader:
+      in: header
+      name: Accept
+      required: true
+      schema:
+        type: string
+        enum:
+          - application/json
+      description: Media type the client is able to understand.
     FilterById:
       in: query
       name: 'filter[id]'
@@ -1969,6 +2108,61 @@ components:
               data:
                 type: project
                 id: 124
+    ProductUpdate:
+      properties:
+        type:
+          type: string
+          example: Product
+        attributes:
+          type: object
+          example:
+            cac421d3-8a06-4491-905f-a5a38a985077: Product One
+            cac421d3-8a06-4491-905f-a5a38a985078: '1234551'
+            61183a63-6340-4649-96b2-db91a7da251c: >-
+              the value of the attribute with the key
+              cac421d3-8a06-4491-905f-a5a38a985078
+            d784bfe9-c311-46cb-98f2-317efe36d9ae: >-
+              the value of the attribute with the key
+              cac421d3-8a06-4491-905f-a5a38a985079
+        relationships:
+          type: object
+          properties:
+            project:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: Project
+                    id:
+                      type: integer
+                      format: int32
+                      example: '123'
+      example:
+        - type: product
+          attributes:
+            cac421d3-8a06-4491-905f-a5a38a985077: Product One
+            cac421d3-8a06-4491-905f-a5a38a985078: '1234551'
+            61183a63-6340-4649-96b2-db91a7da251c: Description of Product One
+            d784bfe9-c311-46cb-98f2-317efe36d9ae: Additional Attribute for Product One
+          relationships:
+            project:
+              data:
+                type: project
+                id: 123
+        - type: product
+          attributes:
+            cac421d3-8a06-4491-905f-a5a38a985077: Product Two
+            cac421d3-8a06-4491-905f-a5a38a985078: '1234552'
+            61183a63-6340-4649-96b2-db91a7da251c: Description of Product Two
+            d784bfe9-c311-46cb-98f2-317efe36d9ae: Additional Attribute for Product Two
+          relationships:
+            project:
+              data:
+                type: project
+                id: 124
     Product:
       required:
         - id
@@ -2110,6 +2304,12 @@ components:
         - name
         - url
         - events
+      example:
+        name: My new renamed webhook
+        url: 'https://webhook.site/your-webhook-url'
+        events:
+          - order.created
+          - product.updated
     Token:
       required:
         - data
@@ -2132,11 +2332,11 @@ components:
         first:
           type: string
           format: uri
-          example: 'https://your-subdomain.prostudio.cloud/api/v1/assets?page=1'
+          example: 'https://your-subdomain.prostudio.cloud/api/v2/assets?page=1'
         last:
           type: string
           format: uri
-          example: 'https://your-subdomain.prostudio.cloud/api/v1/assets?page=1'
+          example: 'https://your-subdomain.prostudio.cloud/api/v2/assets?page=1'
         prev:
           type: string
           nullable: true
@@ -2178,7 +2378,7 @@ components:
         path:
           type: string
           format: uri
-          example: 'https://tenant1.localhost/api/v1/assets'
+          example: 'https://your-subdomain.prostudio.cloud/api/v2/assets'
         per_page:
           type: integer
           example: 15
