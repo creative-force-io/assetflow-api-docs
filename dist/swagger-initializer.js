@@ -40,11 +40,11 @@ window.onload = function() {
         if (changelog) {
           const changelogDiv = document.createElement('div');
           changelogDiv.innerHTML = `
-            <h4>Changelog</h4>
+            <h2>Changelog</h2>
             <div>
               ${changelog.split('\n').map(line => {
                 if (line.startsWith('###')) {
-                  return `<h5>${line.replace('### ', '')}</h5>`;
+                  return `<h3>${line.replace('### ', '')}</h3>`;
                 }
                 return `<p>${line}</p>`;
               }).join('')}
