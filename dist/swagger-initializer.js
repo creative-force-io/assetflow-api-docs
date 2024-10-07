@@ -15,26 +15,34 @@ window.onload = function() {
     ],
     layout: "StandaloneLayout",
     onComplete: function() {
-      const spec = window.ui.specSelectors.specJson().toJS();
-      const infoSection = document.querySelector(".info");
+      // Wait until Swagger UI has fully rendered
+      setTimeout(function() {
+        const spec = window.ui.specSelectors.specJson().toJS();
+        const infoSection = document.querySelector(".info");
 
-      // Check if x-release-notes and x-changelog are present in the OpenAPI spec
-      const releaseNotes = spec.info["x-release-notes"];
-      const changelog = spec.info["x-changelog"];
+        if (!infoSection) {
+          console.warn('Info section not found');
+          return;
+        }
 
-      // Append Release Notes to the Info section if they exist
-      if (releaseNotes) {
-        const releaseNotesDiv = document.createElement('div');
-        releaseNotesDiv.innerHTML = `<h4>Release Notes</h4><pre>${releaseNotes}</pre>`;
-        infoSection.appendChild(releaseNotesDiv);
-      }
+        // Check if x-release-notes and x-changelog are present in the OpenAPI spec
+        const releaseNotes = spec.info["x-release-notes"];
+        const changelog = spec.info["x-changelog"];
 
-      // Append Changelog to the Info section if it exists
-      if (changelog) {
-        const changelogDiv = document.createElement('div');
-        changelogDiv.innerHTML = `<h4>Changelog</h4><pre>${changelog}</pre>`;
-        infoSection.appendChild(changelogDiv);
-      }
+        // Append Release Notes to the Info section if they exist
+        if (releaseNotes) {
+          const releaseNotesDiv = document.createElement('div');
+          releaseNotesDiv.innerHTML = `<h4>Release Notes</h4><pre>${releaseNotes}</pre>`;
+          infoSection.appendChild(releaseNotesDiv);
+        }
+
+        // Append Changelog to the Info section if it exists
+        if (changelog) {
+          const changelogDiv = document.createElement('div');
+          changelogDiv.innerHTML = `<h4>Changelog</h4><pre>${changelog}</pre>`;
+          infoSection.appendChild(changelogDiv);
+        }
+      }, 1000);  // Adjust timeout value if necessary
     }
   });
 
