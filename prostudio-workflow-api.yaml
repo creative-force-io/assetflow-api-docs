@@ -172,10 +172,11 @@ info:
     url: 'https://support.profoto.com/en/support/solutions/79000058200'
   version: 2.0.1
   x-changelog: >-
-    ### 2024-10-07
-    - Documentation updated with information about pagination and webhooks endpoints
-    - New endpoints for patching products PATCH /product
-    - New endpoints for creating and deleting orders
+    ### Version 1.7.3 - NOT YET RELEASED
+      - New endpoints for patching products PATCH /product
+      - New endpoints for creating and deleting orders
+    ### Version 1.7.2 - 2024-10-07
+      - Documentation updated with information about pagination and webhooks endpoints
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: 'http://prostudioforworkflow.profoto.com' 
