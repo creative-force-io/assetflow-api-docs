@@ -174,7 +174,12 @@ info:
 externalDocs:
   description: Find out more about Prostudio Workflow
   url: 'http://prostudioforworkflow.profoto.com'
-x-changelog: To be done
+x-changelog: >-
+  2024-10-07
+  - Documentation updated with information about pagination and webhooks endpoints
+  - New endpoints for patching products PATCH /product
+  - New endpoints for creating and deleting orders
+  
 servers:
   - url: 'https://{subdomain}.prostudio.cloud/api/v2'
     variables:
