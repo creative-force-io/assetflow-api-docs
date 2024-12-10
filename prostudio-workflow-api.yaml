@@ -733,11 +733,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderCreate'
             example:
               data:
                 description: My new order
@@ -764,11 +759,6 @@ paths:
               $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
-              schema:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Webhook'
               example:
                 data:
                   - type: webhook
@@ -1223,14 +1213,15 @@ paths:
           content:
             application/json:
               schema:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Site'
-                links:
-                  $ref: '#/components/schemas/Links'
-                meta:
-                  $ref: '#/components/schemas/Meta'
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Site'
+                  links:
+                    $ref: '#/components/schemas/Links'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
   '/sites/{id}':
     get:
       tags:
@@ -1539,14 +1530,15 @@ paths:
           content:
             application/json:
               schema:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Webhook'
-                links:
-                  $ref: '#/components/schemas/Links'
-                meta:
-                  $ref: '#/components/schemas/Meta'
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+                  links:
+                    $ref: '#/components/schemas/Links'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
               example:
                 data:
                   - type: webhook
@@ -1565,10 +1557,11 @@ paths:
         content:
           application/json:
             schema:
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Webhook'
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Webhook'
             example:
               data:
                 name: My webhhok
@@ -1588,10 +1581,11 @@ paths:
           content:
             application/json:
               schema:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Webhook'
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
               example:
                 data:
                   - type: webhook
@@ -1637,10 +1631,11 @@ paths:
           content:
             application/json:
               schema:
-                data:
-                  type: object
-                  items:
-                    $ref: '#/components/schemas/Webhook'
+                properties:
+                  data:
+                    type: object
+                    items:
+                      $ref: '#/components/schemas/Webhook'
               example:
                 data:
                   - type: webhook
