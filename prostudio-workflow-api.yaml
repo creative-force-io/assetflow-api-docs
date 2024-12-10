@@ -556,7 +556,7 @@ paths:
         Update a product by identifier attributes. 
         Use identifiers key to fetch the product and the attributes key to force update the existing values with the provided ones. 
         Values that are type tags, can be updated only by using the key value of each tag. 
-        Check `settings/attributes/project` to get available key values of tags
+        Check `settings/attributes/project` to get available key values of tags.
       operationId: updateProduct
       requestBody:
         content:
@@ -733,6 +733,11 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderCreate'
             example:
               data:
                 description: My new order
@@ -2155,8 +2160,8 @@ components:
             attributes:
               cac421d3-8a06-4491-905f-a5a38a985077: Product One
               3c83994967aa4d3c8ec94921fbdb056f:
-              - custom-from-api
-              - brand
+                - custom-from-api
+                - brand
               cac421d3-8a06-4491-905f-a5a38a985078: '1234552'
               61183a63-6340-4649-96b2-db91a7da251c: Description of Product One
               d784bfe9-c311-46cb-98f2-317efe36d9ae: Additional Attribute for Product One
