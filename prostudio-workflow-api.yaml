@@ -612,6 +612,42 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           $ref: '#/components/responses/NotFoundError'
+    patch:
+      tags:
+        - Products
+      summary: Update a product by attributes.
+      deprecated: true
+      description: >-
+        Update a product by identifier attributes. 
+        The id on the url will not be used to identify the product.
+        Use attributes key to identify the product and update the existing values with the provided ones.
+        There is no way to update identifier attributes through this endpoint.
+        Values that are type tags, can be updated only by using the key value of each tag. 
+        Check `settings/attributes/project` to get available key values of tags. This endpoint will be deprecated with PATCH `/products`
+      operationId: updateProductById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
   '/products/{id}/checkin/{site}':
     post:
       tags:
